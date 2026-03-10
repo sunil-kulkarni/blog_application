@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{layout :: head('Home - SparkBlog')}"></head>
+<body>
+<header th:replace="~{layout :: header(${loggedInUser})}"></header>
+
+<main class="container">
+    <div class="hero">
+        <h1>Discover amazing stories</h1>
+        <p>A beautiful, modern space to read and share your thoughts.</p>
+    </div>
+
+    <div class="blog-grid">
+        <div th:each="blog : ${blogs}" class="blog-card">
+            <div th:if="${blog.base64Image != null}" class="blog-card-image">
+                <img th:src="@{'data:image/jpeg;base64,' + ${blog.base64Image}}" alt="Blog Cover">
+            </div>
+            <div class="blog-card-content">
+                <h2 class="blog-title">
+                    <a th:href="@{/blog/{id}(id=${blog.id})}" th:text="${blog.title}">Blog Title</a>
+                </h2>
+                <div class="blog-meta">
+                    <span th:text="${blog.user.name}">Author</span> •
+                    <span th:text="${#calendars.format(blog.createdAt, 'MMM dd, yyyy')}">Date</span>
+                </div>
+                <p class="blog-excerpt" th:text="${#strings.abbreviate(blog.content, 150)}">Excerpt...</p>
+                
+                <div class="blog-stats">
+                    <span>❤️ [[${#lists.size(blog.reactions)}]] Likes</span>
+                    <span>💬 [[${#lists.size(blog.comments)}]] Comments</span>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div th:if="${#lists.isEmpty(blogs)}" class="empty-state">
+        <p>No blogs published yet. Be the first to share a story!</p>
+    </div>
+</main>
+
+</body>
+</html>

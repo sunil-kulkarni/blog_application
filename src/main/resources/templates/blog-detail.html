@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{layout :: head(${blog.title} + ' - SparkBlog')}"></head>
+<body>
+
+<header th:replace="~{layout :: header(${loggedInUser})}"></header>
+
+<main class="container detail-container">
+    <article class="blog-detail glass-panel">
+        <div class="blog-header">
+            <h1 th:text="${blog.title}">Blog Title</h1>
+            <div class="blog-meta-lg">
+                <div class="author-info">
+                    <div class="avatar" th:text="${#strings.substring(blog.user.name,0,1)}">U</div>
+                    <div>
+                        <strong><span th:text="${blog.user.name}">Author Name</span></strong><br>
+                        <span th:text="${#calendars.format(blog.createdAt, 'MMM dd, yyyy • HH:mm')}">Date</span>
+                    </div>
+                </div>
+                
+                <div class="action-buttons" th:if="${loggedInUser != null and loggedInUser.id == blog.user.id}">
+                    <a th:href="@{/blog/{id}/edit(id=${blog.id})}" class="btn btn-secondary btn-sm">Edit</a>
+                    <form th:action="@{/blog/{id}/delete(id=${blog.id})}" method="post" style="display:inline;" onsubmit="return confirm('Are you sure you want to delete this post?');">
+                        <button type="submit" class="btn btn-danger btn-sm">Delete</button>
+                    </form>
+                </div>
+            </div>
+            </div>
+        </div>
+        
+        <div th:if="${blog.base64Image != null}" class="blog-hero-image">
+            <img th:src="@{'data:image/jpeg;base64,' + ${blog.base64Image}}" alt="Blog Cover" style="width: 100%; max-height: 500px; object-fit: cover; border-radius: 12px; margin: 2rem 0;">
+        </div>
+        
+        <div class="blog-body" th:text="${blog.content}">
+            Blog Content Goes Here...
+        </div>
+        
+        <div class="blog-footer">
+            <span class="likes-count">❤️ [[${#lists.size(blog.reactions)}]] Likes</span>
+            <th:block th:if="${loggedInUser != null}">
+                <form th:action="@{/blog/{id}/like(id=${blog.id})}" method="post" style="display:inline;">
+                    <button type="submit" class="btn btn-icon" title="Toggle Like">
+                        <span th:text="${#lists.contains(blog.reactions.![user.id], loggedInUser.id)} ? '❤️' : '🤍'">👍</span>
+                    </button>
+                </form>
+            </th:block>
+        </div>
+    </article>
+
+    <section class="comments-section">
+        <h3>Comments ([[${#lists.size(blog.comments)}]])</h3>
+        
+        <div th:if="${loggedInUser != null}" class="comment-form-container glass-panel">
+            <form th:action="@{/blog/{id}/comment(id=${blog.id})}" method="post">
+                <div class="form-group">
+                    <textarea name="content" required placeholder="Add to the discussion..." rows="3"></textarea>
+                </div>
+                <button type="submit" class="btn btn-primary">Post Comment</button>
+            </form>
+        </div>
+        <div th:if="${loggedInUser == null}" class="login-prompt glass-panel">
+            <p><a th:href="@{/login}">Log in</a> to leave a comment.</p>
+        </div>
+
+        <div class="comments-list">
+            <div th:each="comment : ${blog.comments}" class="comment-card">
+                <div class="comment-header">
+                    <strong><span th:text="${comment.user.name}">User</span></strong>
+                    <span class="comment-date" th:text="${#calendars.format(comment.createdAt, 'MMM dd, yyyy HH:mm')}">Date</span>
+                </div>
+                <div class="comment-body" th:text="${comment.content}">
+                    Comment content...
+                </div>
+            </div>
+            
+            <p th:if="${#lists.isEmpty(blog.comments)}" class="no-comments">No comments yet. Start the conversation!</p>
+        </div>
+    </section>
+</main>
+
+</body>
+</html>

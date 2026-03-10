@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{layout :: head(${blog.id == null ? 'New Draft' : 'Edit Post'} + ' - SparkBlog')}"></head>
+<body>
+
+<header th:replace="~{layout :: header(${loggedInUser})}"></header>
+
+<main class="container form-container">
+    <div class="form-card glass-panel">
+        <h1 th:text="${blog.id == null ? 'Write a Story' : 'Edit your Story'}">Form Title</h1>
+        
+        <form th:action="${blog.id == null ? '/blog/new' : '/blog/' + blog.id + '/edit'}" method="post" enctype="multipart/form-data" class="blog-form">
+            <div class="form-group form-group-lg">
+                <input type="text" id="title" name="title" th:value="${blog.title}" required placeholder="Title" class="input-title" autofocus>
+            </div>
+            <div class="form-group image-upload-group">
+                <label for="image">Cover Image (Optional)</label>
+                <input type="file" id="image" name="image" accept="image/*" class="input-file">
+            </div>
+            <div class="form-group">
+                <textarea id="content" name="content" th:text="${blog.content}" required placeholder="Tell your story..." class="input-content" rows="15"></textarea>
+            </div>
+            <div class="form-actions">
+                <a th:href="${blog.id == null ? '/' : '/blog/' + blog.id}" class="btn btn-secondary">Cancel</a>
+                <button type="submit" class="btn btn-primary" th:text="${blog.id == null ? 'Publish' : 'Save Changes'}">Submit</button>
+            </div>
+        </form>
+    </div>
+</main>
+
+</body>
+</html>

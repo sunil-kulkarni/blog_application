@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head th:fragment="head(title)">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title th:text="${title}">Modern Blog</title>
+    <!-- Google Fonts: Inter -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <!-- Custom CSS -->
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+</head>
+<body>
+
+<header th:fragment="header(loggedInUser)">
+    <nav class="navbar">
+        <div class="logo">
+            <a th:href="@{/}">⚡ SparkBlog</a>
+        </div>
+        <div class="nav-links">
+            <a th:href="@{/}">Feed</a>
+            <th:block th:if="${loggedInUser != null}">
+                <a th:href="@{/dashboard}">Dashboard</a>
+                <a th:href="@{/blog/new}" class="btn btn-primary">Write a Story</a>
+                <span class="user-greeting">Hi, <span th:text="${loggedInUser.name}">User</span>!</span>
+                <a th:href="@{/logout}" class="btn btn-secondary">Logout</a>
+            </th:block>
+            <th:block th:if="${loggedInUser == null}">
+                <a th:href="@{/login}" class="btn btn-secondary">Log In</a>
+                <a th:href="@{/register}" class="btn btn-primary">Sign Up</a>
+            </th:block>
+        </div>
+    </nav>
+
+    <!-- Toast Container -->
+    <div id="toast-container" class="toast-container">
+        <div th:if="${toastSuccess}" class="toast toast-success" role="alert">
+            <div class="toast-message" th:text="${toastSuccess}">Success message</div>
+            <button class="toast-close" onclick="this.parentElement.remove()">×</button>
+        </div>
+        <div th:if="${toastError}" class="toast toast-error" role="alert">
+            <div class="toast-message" th:text="${toastError}">Error message</div>
+            <button class="toast-close" onclick="this.parentElement.remove()">×</button>
+        </div>
+    </div>
+    
+    <script>
+        // Auto dismiss toasts after 5 seconds
+        document.addEventListener('DOMContentLoaded', () => {
+            const toasts = document.querySelectorAll('.toast');
+            toasts.forEach(toast => {
+                setTimeout(() => {
+                    toast.style.animation = 'slideOutRight 0.3s ease-in forwards';
+                    setTimeout(() => toast.remove(), 300);
+                }, 5000);
+            });
+        });
+    </script>
+</header>
+
+</body>
+</html>
