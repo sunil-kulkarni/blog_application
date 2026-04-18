@@ -1,3 +1,14 @@
+//
+
+///
+/// 
+/// 
+/// 
+/// 
+/// 
+/// 
+/// 
+
 package com.example.blog.controller;
 
 import com.example.blog.entity.Image;
@@ -7,30 +18,37 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
+//
 @RestController
 @RequestMapping("/api/images")
 public class ImageController {
 
+    // Service layer dependency for image operations
     private final ImageService imageService;
 
     public ImageController(ImageService imageService) {
         this.imageService = imageService;
     }
 
-    public record UploadImageRequest(Integer blogId, String url, String caption) {}
+    // Request payload for uploading an image linked to a blog
+    public record UploadImageRequest(Integer blogId, String url, String caption) {
+    }
 
+    // Upload a new image for a specific blog
     @PostMapping
     public ResponseEntity<Image> upload(@RequestBody UploadImageRequest request) {
         Image image = imageService.upload(request.blogId(), request.url(), request.caption());
         return ResponseEntity.ok(image);
     }
 
+    // Delete an image by its ID
     @DeleteMapping("/{imageId}")
     public ResponseEntity<Void> delete(@PathVariable Integer imageId) {
         imageService.delete(imageId);
         return ResponseEntity.ok().build();
     }
-    
+
+    // Retrieve all images associated with a specific blog ID
     @GetMapping("/blog/{blogId}")
     public ResponseEntity<List<Image>> getByBlogId(@PathVariable Integer blogId) {
         return ResponseEntity.ok(imageService.getByBlogId(blogId));
